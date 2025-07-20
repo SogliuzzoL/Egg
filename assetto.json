@@ -16,12 +16,10 @@
   "file_denylist": [],
   "startup": "./server-manager --port {{server.build.env.WEB_PORT}}",
   "config": {
-    "files": "{}",
     "startup": {
       "done": "Web server started on"
     },
-    "logs": "{}",
-    "stop": "^C"
+    "stop": "kill {{process.pid}}"
   },
   "scripts": {
     "installation": {
