@@ -1,29 +1,31 @@
 {
-  "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY CHATGPT",
+  "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL",
   "meta": {
     "version": "PTDL_v2",
     "update_url": null
   },
   "exported_at": "2025-07-20T00:00:00+00:00",
   "name": "Assetto Corsa Server Manager",
-  "author": "loris.sogliuzzo",
-  "uuid": "dcb0a7e3-4e2f-41f3-b95c-b5d6adcc72c7",
-  "description": "Assetto Corsa Server using JustaPenguin's Assetto Server Manager with web interface",
+  "author": "loris.sogliuzzo@example.com",
+  "uuid": "acsm-template-uuid-001",
+  "description": "Assetto Corsa Server Manager (ACSM) avec interface web – basé sur l'image Docker seejy/assetto-server-manager.",
   "features": null,
   "docker_images": {
-    "Dotnet_8": "ghcr.io/parkervcp/yolks:dotnet_8"
+    "Default": "seejy/assetto-server-manager:latest"
   },
   "file_denylist": [],
-  "startup": "./server-manager --port {{server.build.env.WEB_PORT}}",
+  "startup": "./acsm",
   "config": {
+    "files": "{}",
     "startup": {
-      "done": "Web server started on"
+      "done": "Server Manager is now running"
     },
-    "stop": "kill {{process.pid}}"
+    "logs": "{}",
+    "stop": "^C"
   },
   "scripts": {
     "installation": {
-      "script": "#!/bin/bash\n\napt update\napt -y install curl git jq unzip sqlite3\n\nINSTALL_DIR=/mnt/server\nSM_VERSION=$(curl -s https://api.github.com/repos/JustaPenguin/assetto-server-manager/releases/latest | jq -r '.tag_name')\n\ncd $INSTALL_DIR\n\ncurl -L \"https://github.com/JustaPenguin/assetto-server-manager/releases/download/$SM_VERSION/assettocorsaservermanager.zip\" -o manager.zip\nunzip manager.zip\nrm manager.zip\n\nchmod +x server-manager\n\nmkdir -p cfg logs content tracks cars plugins\n\nif [ ! -f \"AssettoServer\" ]; then\n    echo \"Téléchargement d'AssettoServer...\"\n    MATCH=$( [[ \"$(uname -m)\" == \"x86_64\" ]] && echo \"linux-x64\" || echo \"linux-arm64\" )\n    LATEST_JSON=$(curl --silent \"https://api.github.com/repos/compujuckel/AssettoServer/releases/latest\")\n    DOWNLOAD_URL=$(echo ${LATEST_JSON} | jq .assets | jq -r .[].browser_download_url | grep -i ${MATCH})\n    curl -sSL -o assetto-server-linux.tar.gz ${DOWNLOAD_URL}\n    tar xvf assetto-server-linux.tar.gz\n    rm assetto-server-linux.tar.gz\n    chmod +x AssettoServer\nfi\n\necho \"-----------------------------------------\"\necho \"Installation completed...\"\necho \"-----------------------------------------\"",
+      "script": "#!/bin/bash\n\nmkdir -p /mnt/server/content\nmkdir -p /mnt/server/cfg\n\n# Pas d'installation nécessaire avec l'image seejy/assetto-server-manager\n\necho \"-------------------------------------------------\"\necho \"ACSM prêt à démarrer avec l'image Docker dédiée.\"\necho \"Placez vos fichiers dans /content ou /cfg.\"\necho \"Interface web accessible sur le port configuré.\"\necho \"-------------------------------------------------\"",
       "container": "ghcr.io/parkervcp/installers:debian",
       "entrypoint": "bash"
     }
@@ -31,11 +33,11 @@
   "variables": [
     {
       "name": "Web Port",
-      "description": "Port used to access the Server Manager web interface",
+      "description": "Port de l'interface web d'ACSM (par défaut 8772)",
       "env_variable": "WEB_PORT",
       "default_value": "8772",
       "user_viewable": true,
-      "user_editable": true,
+      "user_editable": false,
       "rules": "required|numeric",
       "field_type": "text"
     }
